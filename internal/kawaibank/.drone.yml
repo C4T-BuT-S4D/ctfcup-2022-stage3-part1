@@ -1,0 +1,11 @@
+kind: pipeline
+type: docker
+name: test
+
+steps:
+- name: test
+  image: node:16.18.1
+  commands:
+  - useradd -ms /bin/sh hh
+  - su - hh -c "cd $(pwd) && npm i"
+  - su - hh -c "cd $(pwd) && npx hardhat test"
