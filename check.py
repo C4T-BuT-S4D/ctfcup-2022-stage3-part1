@@ -214,13 +214,6 @@ class Checker(BaseValidator):
 class Service(BaseValidator):
     def __init__(self, name: str):
         self._name = name
-        self._path = SERVICES_PATH / self._name
-        self._dc_path = self._path / 'docker-compose.yml'
-        self._fatal(
-            self._dc_path.exists(),
-            f'{self._dc_path.relative_to(BASE_DIR)} missing',
-        )
-
         self._checker = Checker(self._name)
 
     @property
@@ -230,22 +223,6 @@ class Service(BaseValidator):
     @property
     def checker_info(self):
         return self._checker.info
-
-    def _run_dc(self, *args):
-        cmd = ['docker-compose', '-f', str(self._dc_path)] + list(args)
-        subprocess.run(cmd, check=True)
-
-    def up(self):
-        self._log('starting')
-        self._run_dc('up', '--build', '-d')
-
-    def logs(self):
-        self._log('printing logs')
-        self._run_dc('logs', '--tail', '2000')
-
-    def down(self):
-        self._log('stopping')
-        self._run_dc('down', '-v')
 
     def validate_checker(self):
         self._log('validating checker')
@@ -264,10 +241,9 @@ class Service(BaseValidator):
 
 
 class StructureValidator(BaseValidator):
-    def __init__(self, d: Path, service: Service):
+    def __init__(self, d: Path):
         self._dir = d
         self._was_error = False
-        self._service = service
 
     def _error(self, cond, message):
         err = super()._error(cond, message)
@@ -275,8 +251,7 @@ class StructureValidator(BaseValidator):
         return err
 
     def validate(self):
-        for d in VALIDATE_DIRS:
-            self.validate_dir(self._dir / d / self._service.name)
+        self.validate_dir(self._dir)
         return not self._was_error
 
     def validate_dir(self, d: Path):
@@ -436,13 +411,13 @@ class StructureValidator(BaseValidator):
                 self._error(p not in checker_code, f'forbidden pattern "{p}" in {path}')
 
     def __str__(self):
-        return f'Structure validator for {self._service.name}'
+        return f'Structure validator for {self._dir}'
 
 
 def get_services() -> List[Service]:
     if os.getenv('SERVICE') in ['all', None]:
         result = list(
-            Service(service_path.name) for service_path in SERVICES_PATH.iterdir()
+            Service(service_path.name) for service_path in CHECKERS_PATH.iterdir()
             if service_path.name[0] != '.' and service_path.is_dir()
         )
     else:
@@ -458,18 +433,18 @@ def list_services(_args):
 
 
 def start_services(_args):
-    for service in get_services():
-        service.up()
+    cmd = ['docker' ,'compose', '-f', str(BASE_DIR / 'internal' / 'network' / 'docker-compose.yml'), 'up', '--build', '-d']
+    subprocess.run(cmd, check=True)
 
 
 def stop_services(_args):
-    for service in get_services():
-        service.down()
+    cmd = ['docker' ,'compose', '-f', str(BASE_DIR / 'internal' / 'network' / 'docker-compose.yml'), 'down', '-v']
+    subprocess.run(cmd, check=True)
 
 
 def logs_services(_args):
-    for service in get_services():
-        service.logs()
+    cmd = ['docker' ,'compose', '-f', str(BASE_DIR / 'internal' / 'network' / 'docker-compose.yml'), 'logs', '--tail', '2000']
+    subprocess.run(cmd, check=True)
 
 
 def validate_checkers(_args):
@@ -479,10 +454,17 @@ def validate_checkers(_args):
 
 def validate_structure(_args):
     was_error = False
-    for service in get_services():
-        validator = StructureValidator(BASE_DIR, service)
-        if not validator.validate():
-            was_error = True
+    if not StructureValidator(BASE_DIR / 'internal' / 'network').validate():
+        was_error = True
+    if not StructureValidator(BASE_DIR / 'internal' / 'kawaibank').validate():
+        was_error = True
+    if not StructureValidator(BASE_DIR / 'internal' / 'gitea').validate():
+        was_error = True
+    if not StructureValidator(BASE_DIR / 'internal' / 'drone').validate():
+        was_error = True
+
+    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_box').validate():
+        was_error = True
 
     if was_error:
         with OUT_LOCK:
@@ -503,7 +485,7 @@ def dump_tasks(_args):
             'checker': f'{service.name}/checker.py',
             'checker_timeout': info['timeout'],
             'checker_type': checker_type,
-            'places': info['timeout'],
+            'places': info['vulns'],
             'puts': 1,
             'gets': 1,
         })

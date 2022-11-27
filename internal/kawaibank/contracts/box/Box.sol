@@ -74,7 +74,7 @@ contract Box is IBox {
         delete owners[_tokenId];
         balances[boxOwner] -= 1;
         delete tokenApprovals[_tokenId];
-        (bool success, ) = boxOwner.call(
+        (bool success, ) = msg.sender.call(
             abi.encodeWithSelector(
                 IBoxOwner.boxExterminated.selector,
                 _tokenId,
@@ -99,7 +99,7 @@ contract Box is IBox {
         datas[_tokenId] = _data;
         keys[_tokenId] = _key;
         balances[_owner] += 1;
-        (bool success, ) = _owner.call(
+        (bool success, ) = msg.sender.call(
             abi.encodeWithSelector(
                 IBoxOwner.boxMaterialized.selector,
                 _tokenId,
@@ -151,7 +151,7 @@ contract Box is IBox {
         bytes memory _data
     ) public {
         require(owners[_tokenId] == _from);
-        require(allowed(_tokenId, msg.sender));
+        require(_from == _to || allowed(_tokenId, msg.sender));
         string memory data = datas[_tokenId];
         string memory key = keys[_tokenId];
         exterminateBox(_tokenId, _data);

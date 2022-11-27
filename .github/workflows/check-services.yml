@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         service:
-        - example
+        - kawaibank_box
 
     steps:
     - uses: actions/checkout@v2

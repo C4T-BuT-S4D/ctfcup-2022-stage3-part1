@@ -9,7 +9,11 @@ contract KawaiBank is Ownable {
     TransparentUpgradeableProxy public box;
 
     constructor(IBox _box) {
-        box = new TransparentUpgradeableProxy(address(_box), msg.sender, "");
+        box = new TransparentUpgradeableProxy(
+            address(_box),
+            address(this),
+            abi.encodeWithSelector(IBox.init.selector)
+        );
     }
 
     function upgradeBox(IBox _box) external onlyOwner {

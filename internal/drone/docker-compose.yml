@@ -1,4 +1,4 @@
-version: '2'
+version: '2.4'
 
 services:
   server:
@@ -19,14 +19,20 @@ services:
       DRONE_VALIDATE_PLUGIN_SECRET: '3da8619d0fbc070a54595836d53e720b'
     volumes:
       - ./data:/data
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
+    pids_limit: 4096
+    mem_limit: 4G
+    cpus: 8
 
   validator:
     build: validator
     environment:
       CORRECT_HASH: '3e982ad3ad3c62fbe298ade6bc79b53f'
       ALLOWED_REPOS: '1'
-    restart: always
+    restart: unless-stopped
+    pids_limit: 4096
+    mem_limit: 4G
+    cpus: 8
 

@@ -1,34 +1,26 @@
 function access(r) {
-    var whitelist = [
+    const whitelist = [
         "eth_blockNumber",
         "eth_call",
         "eth_chainId",
-        "eth_estimateGas",
-        "eth_gasPrice",
-        "eth_getBalance",
-        "eth_getCode",
-        "eth_getStorageAt",
-        "eth_getTransactionByHash",
-        "eth_getTransactionCount",
-        "eth_getTransactionReceipt",
-        "eth_sendRawTransaction",
-        "net_version",
-        "rpc_modules",
-        "web3_clientVersion"
+        "net_version"
     ];
-
-    r.error(r.uri);
 
     try {
         var payload = JSON.parse(r.requestBody);
+
         if (payload.jsonrpc !== "2.0") {
             r.return(401, "jsonrpc version not supported\n");
             return;
         }
+
         if (!whitelist.includes(payload.method)) {
-            r.return(401, "jsonrpc method is not allowed\n");
-            return;
+            if (r.headersIn['Authorization'] !== 'Basic MDM4OGY0YWZlODhjNWQ3ZTU2NGE3ZTYyMjc2ZTgwMzE6') {
+                r.return(401, "jsonrpc method is not allowed\n");
+                return;
+            }
         }
+
         if (Object.keys(payload).filter(key => key.toLowerCase() === 'method').length > 1) {
             r.return(401, "jsonrpc method is not allowed\n");
             return;

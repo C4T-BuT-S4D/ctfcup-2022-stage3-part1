@@ -6,6 +6,9 @@ services:
       - ./config:/config
       - ./data:/data
     restart: unless-stopped
+    pids_limit: 4096
+    mem_limit: 4G
+    cpus: 8
 
   nginx:
     image: nginx:1.22-alpine
@@ -17,18 +20,3 @@ services:
     depends_on:
       - geth
     restart: unless-stopped
-
-  faucet:
-    image: chainflag/eth-faucet:1.1.0
-    environment:
-      - WEB3_PROVIDER=http://geth:8545
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./config/keystore:/app/keystore:ro
-      - ./config/password.txt:/app/password.txt:ro
-    command: -wallet.keyjson /app/keystore -wallet.keypass /app/password.txt -faucet.minutes 1
-    depends_on:
-      - geth
-    restart: unless-stopped
-
