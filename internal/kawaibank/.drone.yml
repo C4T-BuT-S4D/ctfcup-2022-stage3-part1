@@ -6,7 +6,7 @@ steps:
 - name: test
   image: node:16.18.1
   commands:
-  - useradd -ms /bin/sh hh
+  - useradd -ms /bin/sh hh && chown -R hh:hh .
   - su hh -c "cd $(pwd) && npm i"
   - su hh -c "cd $(pwd) && npx hardhat test"
 
@@ -19,6 +19,6 @@ steps:
     branch:
     - master
   commands:
-  - useradd -ms /bin/sh hh
+  - useradd -ms /bin/sh hh && chown -R hh:hh .
   - su hh -c "cd $(pwd) && npm i"
   - su hh -c "cd $(pwd) && npx hardhat run ./scripts/service_deploy.js --network ctfpuc_private"
