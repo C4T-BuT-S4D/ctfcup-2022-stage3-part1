@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import copy
 import json
 import os
 import random
@@ -448,15 +449,23 @@ def logs_services(_args):
 
 
 def validate_checkers(_args):
-    for service in get_services():
-        service.validate_checker()
+    with open(BASE_DIR / "services/kawaibank/config.json") as f:
+        config_old = json.load(f)
+    try:
+        config = copy.deepcopy(config_old)
+        for service in get_services():
+            service.validate_checker()
+    finally:
+        with open(BASE_DIR / "services/kawaibank/config.json", "w") as f:
+            json.dump(config_old, f, indent=2)
 
 
 def validate_structure(_args):
     was_error = False
-    if not StructureValidator(BASE_DIR / 'internal' / 'network').validate():
+    
+    if not StructureValidator(BASE_DIR / 'services' / 'kawaibank').validate():
         was_error = True
-    if not StructureValidator(BASE_DIR / 'internal' / 'kawaibank').validate():
+    if not StructureValidator(BASE_DIR / 'internal' / 'network').validate():
         was_error = True
     if not StructureValidator(BASE_DIR / 'internal' / 'gitea').validate():
         was_error = True
