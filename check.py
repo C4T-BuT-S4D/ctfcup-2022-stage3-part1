@@ -464,6 +464,7 @@ def validate_checkers(_args):
         my_env['BLOCKCHAIN_TOKEN'] = '0388f4afe88c5d7e564a7e62276e8031'
         subprocess.run('npm i', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True)
         result = subprocess.run('npx hardhat run ./scripts/service_deploy_init.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True, stdout=subprocess.PIPE)
+        print(result)
         out = json.loads(result.stdout.decode())
         config['KAWAIBANK_ADDRESS'] = out['kawaiBank']
         HOST = out['kawaiBank']
