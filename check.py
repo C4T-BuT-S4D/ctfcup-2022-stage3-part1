@@ -449,23 +449,33 @@ def logs_services(_args):
 
 
 def validate_checkers(_args):
+    global HOST
     with open(BASE_DIR / 'services/kawaibank/config.json') as f:
         config_old = json.load(f)
     try:
         config = copy.deepcopy(config_old)
+        config['BLOCKCHAIN_PROTOCOL'] = 'http'
+        config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
+        config['BLOCKCHAIN_PORT'] = '80'
         config['DEPLOY_KEY'] = '773aae722466d950fd7b754cbd159691773fbba3e91bd7ddf993e8231bf6d825'
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
             json.dump(config, f, indent=2)
-        cmd = ['npm', 'exec', 'hardhat', 'run', './scripts/service_deploy_init.js', '--network', 'ctfpuc_private']
-        subprocess.run(cmd, check=True, env={
-            'BLOCKCHAIN_TOKEN': '0388f4afe88c5d7e564a7e62276e8031'
-        }, cwd=BASE_DIR / 'services' / 'kawaibank')
+        my_env = os.environ.copy()
+        my_env['BLOCKCHAIN_TOKEN'] = '0388f4afe88c5d7e564a7e62276e8031'
+        subprocess.run('npm i', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True)
+        result = subprocess.run('npx hardhat run ./scripts/service_deploy_init.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True, stdout=subprocess.PIPE)
+        out = json.loads(result.stdout.decode())
+        config['KAWAIBANK_ADDRESS'] = out['kawaiBank']
+        HOST = out['kawaiBank']
+        with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
+            json.dump(config, f, indent=2)
 
         for service in get_services():
             service.validate_checker()
     finally:
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
             json.dump(config_old, f, indent=2)
+            f.write('\n')
 
 
 def validate_structure(_args):

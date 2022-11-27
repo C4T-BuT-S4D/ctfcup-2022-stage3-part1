@@ -14,10 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16.18.1
-
     - uses: actions/setup-python@v2
       with:
         python-version: '3.9'
@@ -44,10 +40,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16.18.1
-
     - uses: actions/setup-python@v2
       with:
         python-version: '3.9'
@@ -69,7 +61,7 @@ jobs:
         SERVICE: ${{ matrix.service }}
 
     - name: wait for service ${{ matrix.service }}
-      run: sleep 30
+      run: sleep 10
 
     - name: check service ${{ matrix.service }} small
       run: ./check.py check
@@ -88,7 +80,7 @@ jobs:
         SERVICE: ${{ matrix.service }}
 
     - name: wait for service ${{ matrix.service }}
-      run: sleep 30
+      run: sleep 10
 
     - name: check service ${{ matrix.service }} big
       run: ./check.py check
@@ -114,10 +106,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 16.18.1
-
     - uses: actions/setup-python@v2
       with:
         python-version: '3.9'
@@ -134,7 +122,7 @@ jobs:
         SERVICE: all
 
     - name: wait for services
-      run: sleep 30
+      run: sleep 10
 
     - name: check all services
       run: ./check.py check
