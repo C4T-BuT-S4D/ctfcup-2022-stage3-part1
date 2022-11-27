@@ -228,7 +228,7 @@ class Service(BaseValidator):
     def validate_checker(self):
         self._log('validating checker')
 
-        cnt_threads = 1
+        cnt_threads = max(1, min(MAX_THREADS, RUNS // 10))
         self._log(f'starting {cnt_threads} checker threads')
         with ThreadPoolExecutor(
                 max_workers=cnt_threads,
@@ -451,31 +451,47 @@ def logs_services(_args):
 def validate_checkers(_args):
     global HOST
     with open(BASE_DIR / 'services/kawaibank/config.json') as f:
-        config_old = json.load(f)
+        service_config_old = json.load(f)
+    with open(BASE_DIR / 'checkers/kawaibank_box/config.json') as f:
+        checker_box_config_old = json.load(f)
     try:
-        config = copy.deepcopy(config_old)
-        config['BLOCKCHAIN_PROTOCOL'] = 'http'
-        config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
-        config['BLOCKCHAIN_PORT'] = '80'
-        config['DEPLOY_KEY'] = '773aae722466d950fd7b754cbd159691773fbba3e91bd7ddf993e8231bf6d825'
+        service_config = copy.deepcopy(service_config_old)
+        checker_box_config = copy.deepcopy(checker_box_config_old)
+
+        service_config['BLOCKCHAIN_PROTOCOL'] = 'http'
+        service_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
+        service_config['BLOCKCHAIN_PORT'] = '80'
+        service_config['DEPLOY_KEY'] = '773aae722466d950fd7b754cbd159691773fbba3e91bd7ddf993e8231bf6d825'
+
+        checker_box_config['BLOCKCHAIN_PROTOCOL'] = 'http'
+        checker_box_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
+        checker_box_config['BLOCKCHAIN_PORT'] = '80'
+
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
-            json.dump(config, f, indent=2)
+            json.dump(service_config, f, indent=2)
+
+        with open(BASE_DIR / 'checkers/kawaibank_box/config.json', 'w') as f:
+            json.dump(checker_box_config, f, indent=2)
+
         my_env = os.environ.copy()
         my_env['BLOCKCHAIN_TOKEN'] = '0388f4afe88c5d7e564a7e62276e8031'
         subprocess.run('npm i', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True)
         subprocess.run('npx hardhat compile', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True, stdout=subprocess.PIPE)
         result = subprocess.run('npx hardhat run ./scripts/service_deploy_init.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True, stdout=subprocess.PIPE)
         out = json.loads(result.stdout.decode())
-        config['KAWAIBANK_ADDRESS'] = out['kawaiBank']
+        service_config['KAWAIBANK_ADDRESS'] = out['kawaiBank']
         HOST = out['kawaiBank']
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
-            json.dump(config, f, indent=2)
+            json.dump(service_config, f, indent=2)
 
         for service in get_services():
             service.validate_checker()
     finally:
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
-            json.dump(config_old, f, indent=2)
+            json.dump(service_config_old, f, indent=2)
+            f.write('\n')
+        with open(BASE_DIR / 'checkers/kawaibank_box/config.json', 'w') as f:
+            json.dump(checker_box_config_old, f, indent=2)
             f.write('\n')
 
 

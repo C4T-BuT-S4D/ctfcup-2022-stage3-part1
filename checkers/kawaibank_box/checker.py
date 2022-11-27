@@ -46,7 +46,6 @@ class Checker(BaseChecker):
 
         tx = box.functions.mint(token_id, flag, key).buildTransaction({
             'chainId': self.mch.get_chain_id(),
-            'from': self.mch.get_check_account(),
             'gas': 400000,
             'gasPrice': w3.toWei(10, 'gwei'),
             'nonce': nonce

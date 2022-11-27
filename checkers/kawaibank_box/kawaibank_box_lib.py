@@ -18,6 +18,10 @@ class CheckMachine:
 
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json'), 'r') as f:
             self.config = json.load(f)
+
+        cc = randint(0, len(self.config['CHECK_ACCOUNTS']) - 1)
+        self.check_account = self.config['CHECK_ACCOUNTS'][cc]
+        self.check_key = self.config['CHECK_KEYS'][cc]
         
     def get_w3(self):
         session = get_initialized_session()
@@ -44,7 +48,7 @@ class CheckMachine:
         return rnd_string(20)
 
     def get_check_account(self):
-        return self.config['CHECK_ACCOUNT']
+        return self.check_account
 
     def get_check_key(self):
-        return self.config['CHECK_KEY']
+        return self.check_key
