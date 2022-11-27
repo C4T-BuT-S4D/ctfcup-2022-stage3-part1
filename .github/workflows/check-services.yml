@@ -14,10 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js 16.18.1
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.18.1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16.18.1
 
     - uses: actions/setup-python@v2
       with:
@@ -45,10 +44,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js 16.18.1
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.18.1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16.18.1
 
     - uses: actions/setup-python@v2
       with:
@@ -116,10 +114,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js 16.18.1
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.18.1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16.18.1
 
     - uses: actions/setup-python@v2
       with:
