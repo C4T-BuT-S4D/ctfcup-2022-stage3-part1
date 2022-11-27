@@ -22,17 +22,17 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-    pids_limit: 4096
-    mem_limit: 4G
-    cpus: 8
+    pids_limit: 128
+    mem_limit: 2G
+    cpus: 2
 
   validator:
     build: validator
     environment:
-      CORRECT_HASH: '3e982ad3ad3c62fbe298ade6bc79b53f'
-      ALLOWED_REPOS: '1'
+      CORRECT_HASH: '7d006b59d3099e1916ee67d3efc1b0a1'
+      ALLOWED_REPOS: 'ctfcup-2022-final/team0'
     restart: unless-stopped
-    pids_limit: 4096
-    mem_limit: 4G
-    cpus: 8
+    pids_limit: 128
+    mem_limit: 2G
+    cpus: 1
 
