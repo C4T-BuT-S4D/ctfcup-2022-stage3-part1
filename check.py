@@ -449,14 +449,22 @@ def logs_services(_args):
 
 
 def validate_checkers(_args):
-    with open(BASE_DIR / "services/kawaibank/config.json") as f:
+    with open(BASE_DIR / 'services/kawaibank/config.json') as f:
         config_old = json.load(f)
     try:
         config = copy.deepcopy(config_old)
+        config['DEPLOY_KEY'] = '773aae722466d950fd7b754cbd159691773fbba3e91bd7ddf993e8231bf6d825'
+        with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
+            json.dump(config, f, indent=2)
+        cmd = ['npx', 'hardhat', 'run', './scripts/service_deploy_init.js', '--network', 'ctfpuc_private']
+        subprocess.run(cmd, check=True, env={
+            'BLOCKCHAIN_TOKEN': '0388f4afe88c5d7e564a7e62276e8031'
+        }, cwd=BASE_DIR / 'services' / 'kawaibank')
+
         for service in get_services():
             service.validate_checker()
     finally:
-        with open(BASE_DIR / "services/kawaibank/config.json", "w") as f:
+        with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
             json.dump(config_old, f, indent=2)
 
 
