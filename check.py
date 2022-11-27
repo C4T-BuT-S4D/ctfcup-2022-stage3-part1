@@ -228,7 +228,7 @@ class Service(BaseValidator):
     def validate_checker(self):
         self._log('validating checker')
 
-        cnt_threads = max(1, min(MAX_THREADS, RUNS // 10))
+        cnt_threads = 1
         self._log(f'starting {cnt_threads} checker threads')
         with ThreadPoolExecutor(
                 max_workers=cnt_threads,
