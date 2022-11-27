@@ -6,10 +6,10 @@ services:
     environment:
       DRONE_GITEA_CLIENT_ID: '35607730-54d8-4135-b27a-773110cc6360'
       DRONE_GITEA_CLIENT_SECRET: 'gto_knauhju4nmvvrs7r3cryhfwlyulddzdevmrcipdyvy72ku23fcba'
-      DRONE_GITEA_SERVER: 'https://git-ctfcup.cbsctf.live/'
+      DRONE_GITEA_SERVER: 'https://git.cbsctf.live/'
       DRONE_GIT_ALWAYS_AUTH: 'true'
       DRONE_RPC_SECRET: '4c681ed141dc5f8a65b9b2443d6fb8e6'
-      DRONE_SERVER_HOST: 'drone-ctfcup.cbsctf.live'
+      DRONE_SERVER_HOST: 'ci.cbsctf.live'
       DRONE_SERVER_PROTO: 'https'
       DRONE_REGISTRATION_CLOSED: 'false'
       DRONE_REPOSITORY_FILTER: 'ctfcup-2022-final'
