@@ -2,6 +2,6 @@
   "BLOCKCHAIN_PROTOCOL": "https",
   "BLOCKCHAIN_ADDRESS": "ctfpuc.cbsctf.live",
   "BLOCKCHAIN_PORT": "443",
-  "DEPLOY_KEY": "773aae722466d950fd7b754cbd159691773fbba3e91bd7ddf993e8231bf6d825",
+  "DEPLOY_KEY": "",
   "KAWAIBANK_ADDRESS": ""
 }

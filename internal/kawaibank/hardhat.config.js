@@ -7,11 +7,11 @@ module.exports = {
   solidity: "0.8.17",
   networks: {
     ctfpuc_private: {
-      url: `${process.env.BLOCKCHAIN_PROTOCOL}://${process.env.BLOCKCHAIN_TOKEN}@${config.BLOCKCHAIN_ADDRESS}:${config.BLOCKCHAIN_PORT}`,
+      url: `${config.BLOCKCHAIN_PROTOCOL}://${process.env.BLOCKCHAIN_TOKEN}@${config.BLOCKCHAIN_ADDRESS}:${config.BLOCKCHAIN_PORT}`,
       accounts: [config.DEPLOY_KEY]
     },
     ctfpuc_public: {
-      url: `${process.env.BLOCKCHAIN_PROTOCOL}://${config.BLOCKCHAIN_ADDRESS}:${config.BLOCKCHAIN_PORT}`,
+      url: `${config.BLOCKCHAIN_PROTOCOL}://${config.BLOCKCHAIN_ADDRESS}:${config.BLOCKCHAIN_PORT}`,
       accounts: [config.DEPLOY_KEY]
     }
   }
