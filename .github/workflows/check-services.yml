@@ -36,6 +36,7 @@ jobs:
       matrix:
         service:
         - kawaibank_box
+        - kawaibank_coin
 
     steps:
     - uses: actions/checkout@v2
