@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.2;
+pragma solidity 0.8.14;
 
 import "./IBox.sol";
 
@@ -137,11 +137,12 @@ contract Box is IBox {
         return datas[tokenId];
     }
 
-    function balanceOf(address owner) external view returns (uint256 balance) {
+    function balanceOf(address owner) external view returns (uint256) {
         return balances[owner];
     }
 
-    function ownerOf(uint256 tokenId) external view returns (address owner) {
+    function ownerOf(uint256 tokenId) external view returns (address) {
+        require(msg.sender == owners[tokenId]);
         return owners[tokenId];
     }
 

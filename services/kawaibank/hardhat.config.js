@@ -5,7 +5,7 @@ const config = require('./config.js');
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
-    version: "0.8.17",
+    version: "0.8.14",
     settings: {
       optimizer: {
         enabled: true,

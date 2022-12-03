@@ -6,18 +6,20 @@ const { expect } = require("chai");
 describe("KawaiBank", async function () {
   let KawaiBank;
   let Box;
-  let Coin;
+  let Card;
 
   async function deploy() {
     KawaiBank = await ethers.getContractFactory("KawaiBank");
 
     Box = await ethers.getContractFactory("Box");
     Coin = await ethers.getContractFactory("Coin");
+    Card = await ethers.getContractFactory("Card");
 
     const box = await Box.deploy();
     const coin = await Coin.deploy();
+    const card = await Card.deploy();
 
-    const kawaiBank = await KawaiBank.deploy(box.address, coin.address);
+    const kawaiBank = await KawaiBank.deploy(box.address, coin.address, card.address);
 
     return { kawaiBank };
   }
@@ -137,7 +139,6 @@ describe("KawaiBank", async function () {
 
         await box.connect(owner).mint(1, "data", "key");
         await box.connect(owner)['safeTransferFrom(address,address,uint256)'](owner.address, otherAccount.address, 1);
-        await expect(box.connect(owner).ownerOf(1)).to.eventually.equal(otherAccount.address);
         await expect(box.connect(otherAccount).ownerOf(1)).to.eventually.equal(otherAccount.address);
       });
 
@@ -150,7 +151,6 @@ describe("KawaiBank", async function () {
         await box.connect(owner).mint(1, "data", "key");
         await box.connect(owner).approve(otherAccount.address, 1);
         await box.connect(otherAccount)['safeTransferFrom(address,address,uint256)'](owner.address, otherAccount.address, 1);
-        await expect(box.connect(owner).ownerOf(1)).to.eventually.equal(otherAccount.address);
         await expect(box.connect(otherAccount).ownerOf(1)).to.eventually.equal(otherAccount.address);
       });
 
@@ -163,7 +163,6 @@ describe("KawaiBank", async function () {
         await box.connect(owner).mint(1, "data", "key");
         await box.connect(owner).setApprovalForAll(otherAccount.address, true);
         await box.connect(otherAccount)['safeTransferFrom(address,address,uint256)'](owner.address, otherAccount.address, 1);
-        await expect(box.connect(owner).ownerOf(1)).to.eventually.equal(otherAccount.address);
         await expect(box.connect(otherAccount).ownerOf(1)).to.eventually.equal(otherAccount.address);
       });
 
@@ -450,5 +449,200 @@ describe("KawaiBank", async function () {
         await expect(coin.connect(otherAccount2).viewItem(0)).to.be.reverted;
       });
     });
-  })
+  });
+
+  describe("Card", async function () {
+    it("Creates card", async function () {
+      const { kawaiBank } = await loadFixture(deploy);
+
+      const card = Card.attach(await kawaiBank.card());
+      const [owner] = await ethers.getSigners();
+
+      const balance = await owner.getBalance();
+
+      await expect(card.connect(owner).create(
+        0,
+        Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+        { value: ethers.utils.parseEther('1') }
+      )).not.to.be.reverted;
+
+      await expect(owner.getBalance()).to.eventually.lessThanOrEqual(balance.sub(ethers.utils.parseEther("1.0")));
+    });
+
+    describe("Deposits", async function () {
+      it("Can deposit", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const card = Card.attach(await kawaiBank.card());
+        const [owner] = await ethers.getSigners();
+
+        await card.connect(owner).create(
+          0,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0)))
+        );
+
+        await card.connect(owner).deposit(0, { value: ethers.utils.parseEther('1') });
+
+        await expect(card.connect(owner).balances(0)).to.eventually.equal(ethers.utils.parseEther('1'));
+      });
+
+      it("Can't deposit to non-existent card", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const card = Card.attach(await kawaiBank.card());
+        const [owner] = await ethers.getSigners();
+
+        await expect(card.connect(owner).deposit(0, { value: ethers.utils.parseEther('1') })).to.be.reverted;
+      });
+    });
+
+    describe("Withdrawals", async function () {
+      it("Can withdraw", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const card = Card.attach(await kawaiBank.card());
+        const [owner] = await ethers.getSigners();
+
+        const balance = await owner.getBalance();
+
+        await card.connect(owner).create(
+          0,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+          { value: ethers.utils.parseEther('1') }
+        );
+
+        await expect(card.connect(owner).balances(0)).to.eventually.equal(ethers.utils.parseEther('1'));
+
+        await card.connect(owner).withdraw(
+          0,
+          ethers.utils.parseEther('1')
+        );
+
+        await expect(owner.getBalance()).to.eventually.greaterThanOrEqual(balance.sub(ethers.utils.parseEther("0.1")));
+      });
+
+      it("Can't withdraw more than balance", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const card = Card.attach(await kawaiBank.card());
+        const [owner] = await ethers.getSigners();
+
+        await card.connect(owner).create(
+          0,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+          { value: ethers.utils.parseEther('1') }
+        );
+
+        await expect(card.connect(owner).withdraw(
+          0,
+          ethers.utils.parseEther('1.1')
+        )).to.be.reverted;
+      });
+
+      it("Can't withdraw another owner balance", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const card = Card.attach(await kawaiBank.card());
+        const [owner, otherAccount] = await ethers.getSigners();
+
+        await card.connect(owner).create(
+          0,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+          { value: ethers.utils.parseEther('1') }
+        );
+
+        await expect(card.connect(otherAccount).withdraw(
+          0,
+          ethers.utils.parseEther('1')
+        )).to.be.reverted;
+      });
+    });
+
+    describe("Gifts", async function () {
+      it("Can create and spend gift", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const card = Card.attach(await kawaiBank.card());
+        const [owner, otherAccount] = await ethers.getSigners();
+
+        await card.connect(owner).create(
+          0,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+          { value: ethers.utils.parseEther('1') }
+        );
+
+        await card.connect(otherAccount).create(
+          2,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0)))
+        );
+
+        await card.connect(owner).createGift(
+          1, 0, otherAccount.address, ethers.utils.parseEther('0.5'),
+          Uint8Array.from(Array.from('w'.repeat(32)).map(letter => letter.charCodeAt(0)))
+        );
+
+        const tx = await card.connect(otherAccount).spendGift(0, 1, ethers.utils.parseEther('0.4'), 2, 3);
+
+        await expect(card.connect(otherAccount).balances(2)).to.eventually.equal(ethers.utils.parseEther('0.4'));
+        const sign = await card.sign(
+          {
+            to: otherAccount.address,
+            size: ethers.utils.parseEther('0.5'),
+            key: Uint8Array.from(Array.from('w'.repeat(32)).map(letter => letter.charCodeAt(0)))
+          },
+          tx.blockNumber,
+          Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0)))
+        );
+        await expect(card.connect(otherAccount).signs(2, 3)).to.eventually.equal(sign);
+      });
+    });
+
+    it("Can't spend another owner gift", async function () {
+      const { kawaiBank } = await loadFixture(deploy);
+
+      const card = Card.attach(await kawaiBank.card());
+      const [owner, otherAccount1, otherAccount2] = await ethers.getSigners();
+
+      await card.connect(owner).create(
+        0,
+        Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+        { value: ethers.utils.parseEther('1') }
+      );
+
+      await card.connect(otherAccount2).create(
+        2,
+        Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0)))
+      );
+
+      await card.connect(owner).createGift(
+        1, 0, otherAccount1.address, ethers.utils.parseEther('0.5'),
+        Uint8Array.from(Array.from('w'.repeat(32)).map(letter => letter.charCodeAt(0)))
+      );
+
+      await expect(card.connect(otherAccount2).spendGift(0, 1, ethers.utils.parseEther('0.4'), 2, 3)).to.be.reverted;
+    });
+
+    it("Can't create two gifts with same id", async function () {
+      const { kawaiBank } = await loadFixture(deploy);
+
+      const card = Card.attach(await kawaiBank.card());
+      const [owner, otherAccount1, otherAccount2] = await ethers.getSigners();
+
+      await card.connect(owner).create(
+        0,
+        Uint8Array.from(Array.from('q'.repeat(32)).map(letter => letter.charCodeAt(0))),
+        { value: ethers.utils.parseEther('1') }
+      );
+
+      await card.connect(owner).createGift(
+        1, 0, otherAccount1.address, ethers.utils.parseEther('0.5'),
+        Uint8Array.from(Array.from('w'.repeat(32)).map(letter => letter.charCodeAt(0)))
+      );
+
+      await expect(card.connect(owner).createGift(
+        1, 0, otherAccount1.address, ethers.utils.parseEther('0.5'),
+        Uint8Array.from(Array.from('w'.repeat(32)).map(letter => letter.charCodeAt(0)))
+      )).to.be.reverted;
+    });
+  });
 });

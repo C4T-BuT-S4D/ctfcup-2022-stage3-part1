@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.2;
+pragma solidity 0.8.14;
 
 import "./ICoin.sol";
 
@@ -9,7 +9,7 @@ contract Coin is ICoin {
     address private shareholder;
     mapping(address => uint256) private balances;
     mapping(address => mapping(address => uint256)) private allowances;
-    mapping(address => bool) gotCoins;
+    mapping(address => bool) private gotCoins;
     uint256 private _totalSupply;
 
     struct Item {
@@ -20,7 +20,7 @@ contract Coin is ICoin {
     }
 
     mapping(uint256 => Item) private items;
-    mapping(uint256 => mapping(address => bool)) viewers;
+    mapping(uint256 => mapping(address => bool)) private viewers;
 
     constructor() {
         _disableInitializers();
