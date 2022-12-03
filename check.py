@@ -454,9 +454,15 @@ def validate_checkers(_args):
         service_config_old = json.load(f)
     with open(BASE_DIR / 'checkers/kawaibank_box/config.json') as f:
         checker_box_config_old = json.load(f)
+    with open(BASE_DIR / 'checkers/kawaibank_coin/config.json') as f:
+        checker_coin_config_old = json.load(f)
+    with open(BASE_DIR / 'checkers/kawaibank_card/config.json') as f:
+        checker_card_config_old = json.load(f)
     try:
         service_config = copy.deepcopy(service_config_old)
         checker_box_config = copy.deepcopy(checker_box_config_old)
+        checker_coin_config = copy.deepcopy(checker_coin_config_old)
+        checker_card_config = copy.deepcopy(checker_card_config_old)
 
         service_config['BLOCKCHAIN_PROTOCOL'] = 'http'
         service_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
@@ -467,11 +473,25 @@ def validate_checkers(_args):
         checker_box_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
         checker_box_config['BLOCKCHAIN_PORT'] = '80'
 
+        checker_coin_config['BLOCKCHAIN_PROTOCOL'] = 'http'
+        checker_coin_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
+        checker_coin_config['BLOCKCHAIN_PORT'] = '80'
+
+        checker_card_config['BLOCKCHAIN_PROTOCOL'] = 'http'
+        checker_card_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
+        checker_card_config['BLOCKCHAIN_PORT'] = '80'
+
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
             json.dump(service_config, f, indent=2)
 
         with open(BASE_DIR / 'checkers/kawaibank_box/config.json', 'w') as f:
             json.dump(checker_box_config, f, indent=2)
+
+        with open(BASE_DIR / 'checkers/kawaibank_coin/config.json', 'w') as f:
+            json.dump(checker_coin_config, f, indent=2)
+
+        with open(BASE_DIR / 'checkers/kawaibank_card/config.json', 'w') as f:
+            json.dump(checker_card_config, f, indent=2)
 
         my_env = os.environ.copy()
         my_env['BLOCKCHAIN_TOKEN'] = '0388f4afe88c5d7e564a7e62276e8031'
@@ -493,6 +513,12 @@ def validate_checkers(_args):
         with open(BASE_DIR / 'checkers/kawaibank_box/config.json', 'w') as f:
             json.dump(checker_box_config_old, f, indent=2)
             f.write('\n')
+        with open(BASE_DIR / 'checkers/kawaibank_coin/config.json', 'w') as f:
+            json.dump(checker_coin_config_old, f, indent=2)
+            f.write('\n')
+        with open(BASE_DIR / 'checkers/kawaibank_card/config.json', 'w') as f:
+            json.dump(checker_card_config_old, f, indent=2)
+            f.write('\n')
 
 
 def validate_structure(_args):
@@ -508,6 +534,10 @@ def validate_structure(_args):
         was_error = True
 
     if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_box').validate():
+        was_error = True
+    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_coin').validate():
+        was_error = True
+    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_card').validate():
         was_error = True
 
     if was_error:
