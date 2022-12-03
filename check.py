@@ -506,6 +506,11 @@ def validate_checkers(_args):
 
         for service in get_services():
             service.validate_checker()
+
+        subprocess.run('npx hardhat run ./scripts/service_deploy.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True)
+
+        for service in get_services():
+            service.validate_checker()
     finally:
         with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
             json.dump(service_config_old, f, indent=2)
