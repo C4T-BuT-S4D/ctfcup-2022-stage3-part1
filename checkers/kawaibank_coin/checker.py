@@ -62,7 +62,7 @@ class Checker(BaseChecker):
         check_account, item_id = flag_id.split(':')
         w3 = self.mch.get_w3()
         coin = self.mch.get_coin(w3, self.host)
-        data = coin.functions.viewItem(int(item_id)).call({'from': check_account})
+        data = coin.functions.viewItem(int(item_id)).call()
         self.assert_eq(flag, data, 'viewItem is invalid', status=Status.CORRUPT)
         self.cquit(Status.OK)
 
