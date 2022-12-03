@@ -4,7 +4,15 @@ const config = require('./config.js');
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.17",
+  solidity: {
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 100,
+      },
+    },
+  },
   networks: {
     ctfpuc_private: {
       url: `${config.BLOCKCHAIN_PROTOCOL}://${process.env.BLOCKCHAIN_TOKEN}@${config.BLOCKCHAIN_ADDRESS}:${config.BLOCKCHAIN_PORT}`,

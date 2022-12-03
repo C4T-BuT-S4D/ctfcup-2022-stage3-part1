@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
@@ -11,7 +11,7 @@ abstract contract IBox is
     Initializable,
     OwnableUpgradeable
 {
-    function init() external virtual;
+    function init(address owner) external virtual;
 }
 
 abstract contract IBoxOwner {

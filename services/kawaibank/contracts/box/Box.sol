@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.2;
 
 import "./IBox.sol";
 
@@ -10,8 +10,9 @@ contract Box is IBox {
         _disableInitializers();
     }
 
-    function init() external override initializer {
+    function init(address owner) external override initializer {
         OwnableUpgradeable.__Ownable_init();
+        _transferOwnership(owner);
         _name = "KawaiBox";
     }
 
