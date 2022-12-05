@@ -35,88 +35,144 @@ class Checker(BaseChecker):
             self.cquit(status.Status.DOWN, 'Contract login error', 'Got web3.exceptions.ContractLogicError')
 
     def check(self):
+        w3 = self.mch.get_w3()
+        kawaiBanks = self.mch.get_kawai_banks()
+        for kawaiBank in kawaiBanks:
+            exploit = self.mch.get_exploit(w3, kawaiBank)
+            nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
+
+            tx = exploit.functions.exploit().buildTransaction({
+                'chainId': self.mch.get_chain_id(),
+                'gas': 50000000,
+                'gasPrice': w3.toWei(10, 'gwei'),
+                'nonce': nonce
+            })
+            tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
+            tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+            r = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+            self.assert_in('status', r, 'Status not available for transaction receipt')
         self.cquit(Status.OK)
 
     def put(self, flag_id: str, flag: str, vuln: str):
-        # w3 = self.mch.get_w3()
-        # card = self.mch.get_card(w3, self.host)
-        # card_id1 = self.mch.get_card_id()
-        # card_id2 = self.mch.get_card_id()
-        # gift_id = self.mch.get_gift_id()
-        # sign_id = self.mch.get_sign_id()
-        # key = self.mch.get_key()
-        # nonce1 = w3.eth.getTransactionCount(self.mch.get_check_account1())
-        # nonce2 = w3.eth.getTransactionCount(self.mch.get_check_account2())
+        w3 = self.mch.get_w3()
+        card = self.mch.get_card(w3, self.host)
+        exploit = self.mch.get_exploit(w3, self.host)
+        card_id1 = self.mch.get_card_id()
+        card_id2 = self.mch.get_card_id()
+        gift_id = self.mch.get_gift_id()
+        sign_id = self.mch.get_sign_id()
+        key = self.mch.get_key()
+        nonce1 = w3.eth.getTransactionCount(self.mch.get_check_account1())
+        nonce2 = w3.eth.getTransactionCount(self.mch.get_check_account2())
 
-        # tx = card.functions.create(card_id1, flag.encode()).buildTransaction({
-        #     'value': w3.toWei(10, 'gwei'),
-        #     'chainId': self.mch.get_chain_id(),
-        #     'gas': 400000,
-        #     'gasPrice': w3.toWei(10, 'gwei'),
-        #     'nonce': nonce1
-        # })
-        # tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key1())
-        # tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-        # r = w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx = card.functions.create(card_id1, flag.encode()).buildTransaction({
+            'value': w3.toWei(10, 'gwei'),
+            'chainId': self.mch.get_chain_id(),
+            'gas': 400000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce1
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key1())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-        # self.assert_in('status', r, 'Status not available for transaction receipt')
-        # self.assert_eq(r['status'], 1, "Can't create card")
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't create card")
 
-        # tx = card.functions.create(card_id2, self.mch.get_key().encode()).buildTransaction({
-        #     'value': w3.toWei(10, 'gwei'),
-        #     'chainId': self.mch.get_chain_id(),
-        #     'gas': 400000,
-        #     'gasPrice': w3.toWei(10, 'gwei'),
-        #     'nonce': nonce2
-        # })
-        # tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key2())
-        # tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-        # r = w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx = card.functions.create(card_id2, self.mch.get_key().encode()).buildTransaction({
+            'value': w3.toWei(10, 'gwei'),
+            'chainId': self.mch.get_chain_id(),
+            'gas': 400000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce2
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key2())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-        # self.assert_in('status', r, 'Status not available for transaction receipt')
-        # self.assert_eq(r['status'], 1, "Can't create card")
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't create card")
 
-        # tx = card.functions.createGift(
-        #     gift_id,
-        #     card_id1,
-        #     self.mch.get_check_account2(),
-        #     w3.toWei(5, 'gwei'),
-        #     key.encode()
-        # ).buildTransaction({
-        #     'chainId': self.mch.get_chain_id(),
-        #     'gas': 400000,
-        #     'gasPrice': w3.toWei(10, 'gwei'),
-        #     'nonce': nonce1 + 1
-        # })
-        # tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key1())
-        # tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-        # r = w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx = card.functions.createGift(
+            gift_id,
+            card_id1,
+            self.mch.get_check_account2(),
+            w3.toWei(5, 'gwei'),
+            key.encode()
+        ).buildTransaction({
+            'chainId': self.mch.get_chain_id(),
+            'gas': 400000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce1 + 1
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key1())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-        # self.assert_in('status', r, 'Status not available for transaction receipt')
-        # self.assert_eq(r['status'], 1, "Can't create gift")
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't create gift")
 
-        # tx = card.functions.spendGift(
-        #     card_id1,
-        #     gift_id,
-        #     w3.toWei(5, 'gwei'),
-        #     card_id2,
-        #     sign_id
-        # ).buildTransaction({
-        #     'chainId': self.mch.get_chain_id(),
-        #     'gas': 400000,
-        #     'gasPrice': w3.toWei(10, 'gwei'),
-        #     'nonce': nonce2 + 1
-        # })
-        # tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key2())
-        # tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-        # r = w3.eth.wait_for_transaction_receipt(tx_hash)
+        tx = card.functions.spendGift(
+            card_id1,
+            gift_id,
+            w3.toWei(5, 'gwei'),
+            card_id2,
+            sign_id
+        ).buildTransaction({
+            'chainId': self.mch.get_chain_id(),
+            'gas': 400000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce2 + 1
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key2())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-        # self.assert_in('status', r, 'Status not available for transaction receipt')
-        # self.assert_eq(r['status'], 1, "Can't spend gift")
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't spend gift")
+        self.assert_in('blockNumber', r, 'Block number not available for transaction receipt')
+        self.assert_eq(type(r['blockNumber']), int, 'Block number is not int')
+        blk = r['blockNumber']
+        to = self.mch.get_check_account2()
 
-        self.cquit(Status.OK)
+        nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
+
+        tx = exploit.functions.addCardAttackData({
+            'kawaiBank': self.host,
+            'cardId': card_id2,
+            'signId': sign_id
+        }).buildTransaction({
+            'chainId': self.mch.get_chain_id(),
+            'gas': 400000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_attack_data_key())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't add attack data")
+
+        self.cquit(Status.OK, f'{self.host}:{card_id2}:{sign_id}', f'{card_id2}:{sign_id}:{blk}:{to}:{key}')
 
     def get(self, flag_id: str, flag: str, vuln: str):
+        w3 = self.mch.get_w3()
+        card = self.mch.get_card(w3, self.host)
+
+        card_id, sign_id, blk, to, key = flag_id.split(':')
+        card_id, sign_id, blk = int(card_id), int(sign_id), int(blk)
+
+        sign_result = card.functions.signs(card_id, sign_id).call()
+        sign_value = card.functions.sign({
+            'to': to,
+            'size': w3.toWei(5, 'gwei'),
+            'key': key.encode()
+        }, blk, flag.encode()).call()
+
+        self.assert_eq(sign_result, sign_value, 'Got unexpected sign', status=Status.CORRUPT)
+
         self.cquit(Status.OK)
 
 

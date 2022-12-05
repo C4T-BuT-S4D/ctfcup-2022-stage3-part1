@@ -43,14 +43,13 @@ class Checker(BaseChecker):
 
             tx = exploit.functions.exploit().buildTransaction({
                 'chainId': self.mch.get_chain_id(),
-                'gas': 4000000,
+                'gas': 50000000,
                 'gasPrice': w3.toWei(10, 'gwei'),
                 'nonce': nonce
             })
             tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
             tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
             r = w3.eth.wait_for_transaction_receipt(tx_hash)
-            print(r['status'])
 
             self.assert_in('status', r, 'Status not available for transaction receipt')
         self.cquit(Status.OK)

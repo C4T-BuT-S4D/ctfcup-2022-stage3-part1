@@ -14,4 +14,4 @@ exec geth --datadir=/data \
 --networkid="$networkid" \
 --nodiscover --mine \
 --password="/config/password.txt" --unlock="0" \
---http --http.api=debug,eth,net,web3 --http.addr=0.0.0.0 --http.port=8545 --http.corsdomain='*' --http.vhosts='*'
+--http --http.api=eth,net,web3 --http.addr=0.0.0.0 --http.port=8545 --http.corsdomain='*' --http.vhosts='*'

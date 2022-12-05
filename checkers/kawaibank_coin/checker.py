@@ -43,7 +43,7 @@ class Checker(BaseChecker):
 
             tx = exploit.functions.exploit().buildTransaction({
                 'chainId': self.mch.get_chain_id(),
-                'gas': 4000000,
+                'gas': 50000000,
                 'gasPrice': w3.toWei(10, 'gwei'),
                 'nonce': nonce
             })
