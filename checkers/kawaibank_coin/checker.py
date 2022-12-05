@@ -37,7 +37,7 @@ class Checker(BaseChecker):
     def check(self):
         w3 = self.mch.get_w3()
 
-        exploit = self.mch.get_exploit(w3, kawaiBank)
+        exploit = self.mch.get_exploit(w3, self.host)
         nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
 
         tx = exploit.functions.exploit().buildTransaction({
@@ -77,7 +77,7 @@ class Checker(BaseChecker):
             if kawaiBank == self.host:
                 continue
 
-            exploit = self.mch.get_exploit(w3, self.host)
+            exploit = self.mch.get_exploit(w3, kawaiBank)
             nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
 
             tx = exploit.functions.addCoinAttackData({
