@@ -9,7 +9,7 @@ from checklib import *
 
 class Checker(BaseChecker):
     vulns: int = 1
-    timeout: int = 20
+    timeout: int = 40
     uses_attack_data: bool = True
 
     def __init__(self, *args, **kwargs):
