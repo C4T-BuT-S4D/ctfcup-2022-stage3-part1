@@ -1,0 +1,62 @@
+admin:
+  password: '<redacted>'
+  username: forcad
+game:
+  checkers_path: /checkers/
+  default_score: 2500.0
+  env_path: ''
+  flag_lifetime: 10
+  game_hardness: 13.0
+  inflation: true
+  mode: classic
+  round_time: 120
+  start_time: 2021-12-10 10:00:00
+  timezone: Europe/Moscow
+  volga_attacks_mode: false
+storages:
+  db:
+    dbname: forcad
+    host: postgres
+    password: secret
+    port: 5432
+    user: forcad
+  rabbitmq:
+    host: rabbitmq
+    password: secret
+    port: 5672
+    user: forcad
+    vhost: forcad
+  redis:
+    db: 0
+    host: redis
+    password: secret
+    port: 6379
+tasks:
+- checker: kawaibank_coin/checker.py
+  checker_timeout: 40
+  checker_type: pfr
+  gets: 1
+  name: kawaibank_coin
+  places: 1
+  puts: 1
+- checker: kawaibank_box/checker.py
+  checker_timeout: 40
+  checker_type: pfr
+  gets: 1
+  name: kawaibank_box
+  places: 1
+  puts: 1
+- checker: kawaibank_card/checker.py
+  checker_timeout: 40
+  checker_type: pfr
+  gets: 1
+  name: kawaibank_card
+  places: 1
+  puts: 1
+teams:
+- highlighted: false
+  ip: '0xbFD5EbB50e77B5d5cf43103Fd556811098155377'
+  name: Team0
+- highlighted: false
+  ip: '0x3f853E2e04Ec0D6d982321c097EE16Cf97C7D880'
+  name: Team1
