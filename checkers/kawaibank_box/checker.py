@@ -74,7 +74,7 @@ class Checker(BaseChecker):
         self.assert_in('status', r, 'Status not available for transaction receipt')
         self.assert_eq(r['status'], 1, "Can't mint token")
 
-        for kawaiBank in kawaiBanks:
+        for kawaiBank in self.mch.get_kawai_banks():
             if kawaiBank == self.host:
                 continue
 

@@ -135,7 +135,7 @@ class Checker(BaseChecker):
         blk = r['blockNumber']
         to = self.mch.get_check_account2()
 
-        for kawaiBank in kawaiBanks:
+        for kawaiBank in self.mch.get_kawai_banks():
             if kawaiBank == self.host:
                 continue
 
