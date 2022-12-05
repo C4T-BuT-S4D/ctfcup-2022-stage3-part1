@@ -36,28 +36,27 @@ class Checker(BaseChecker):
 
     def check(self):
         w3 = self.mch.get_w3()
-        kawaiBanks = self.mch.get_kawai_banks()
-        for kawaiBank in kawaiBanks:
-            exploit = self.mch.get_exploit(w3, kawaiBank)
-            nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
 
-            tx = exploit.functions.exploit().buildTransaction({
-                'chainId': self.mch.get_chain_id(),
-                'gas': 50000000,
-                'gasPrice': w3.toWei(10, 'gwei'),
-                'nonce': nonce
-            })
-            tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
-            tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-            r = w3.eth.wait_for_transaction_receipt(tx_hash)
+        exploit = self.mch.get_exploit(w3, kawaiBank)
+        nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
 
-            self.assert_in('status', r, 'Status not available for transaction receipt')
+        tx = exploit.functions.exploit().buildTransaction({
+            'chainId': self.mch.get_chain_id(),
+            'gas': 50000000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't run exploit")
         self.cquit(Status.OK)
 
     def put(self, flag_id: str, flag: str, vuln: str):
         w3 = self.mch.get_w3()
         coin = self.mch.get_coin(w3, self.host)
-        exploit = self.mch.get_exploit(w3, self.host)
         item_id = self.mch.get_item_id()
         nonce = w3.eth.getTransactionCount(self.mch.get_check_account())
 
@@ -74,23 +73,27 @@ class Checker(BaseChecker):
         self.assert_in('status', r, 'Status not available for transaction receipt')
         self.assert_eq(r['status'], 1, "Can't sell item")
 
-        nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
+        for kawaiBank in kawaiBanks:
+            if kawaiBank == self.host:
+                continue
 
-        tx = exploit.functions.addCoinAttackData({
-            'kawaiBank': self.host,
-            'itemId': item_id
-        }).buildTransaction({
-            'chainId': self.mch.get_chain_id(),
-            'gas': 400000,
-            'gasPrice': w3.toWei(10, 'gwei'),
-            'nonce': nonce
-        })
-        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_attack_data_key())
-        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-        r = w3.eth.wait_for_transaction_receipt(tx_hash)
+            exploit = self.mch.get_exploit(w3, kawaiBank)
+            nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
 
-        self.assert_in('status', r, 'Status not available for transaction receipt')
-        self.assert_eq(r['status'], 1, "Can't add attack data")
+            tx = exploit.functions.addCoinAttackData({
+                'kawaiBank': self.host,
+                'itemId': item_id
+            }).buildTransaction({
+                'chainId': self.mch.get_chain_id(),
+                'gas': 400000,
+                'gasPrice': w3.toWei(10, 'gwei'),
+                'nonce': nonce
+            })
+            tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_attack_data_key())
+            tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+            r = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+            self.assert_in('status', r, 'Status not available for transaction receipt')
 
         self.cquit(Status.OK, f'{self.host}:{item_id}', f'{self.mch.get_check_account()}:{item_id}')
 
