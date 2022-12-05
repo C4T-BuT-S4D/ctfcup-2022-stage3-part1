@@ -57,16 +57,16 @@
 
 Для исправления уязвимости можно добавить проверку на reentrancy в функции `exterminateBox` и `materializeBox`.
 
-patch tbd
+[Пример исправления.](box.patch)
 
 ### 2. Coin
 
 Для исправления уязвимости необходимо заменить проверку `require(msg.sender == _shareholder);` на `require(msg.sender == shareholder);`
 
-patch tbd
+[Пример исправления.](coin.patch)
 
 ### 3. Card
 
 Для исправления уязвимости достаточно передать key в функцию sign, а не сохранять его в memory.
 
-patch tbd
+[Пример исправления.](card.patch)
