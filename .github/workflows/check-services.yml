@@ -37,6 +37,7 @@ jobs:
         service:
         - kawaibank_box
         - kawaibank_coin
+        - kawaibank_card
 
     steps:
     - uses: actions/checkout@v2
