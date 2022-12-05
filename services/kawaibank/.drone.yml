@@ -6,7 +6,7 @@ steps:
 - name: validate repo
   image: node:16.18.1
   commands:
-  - '[ "$(sha256sum get_repo_fingerprint.sh | cut -d " " -f 1)" = "64bb841c427967e702e0bf6060244e5f306d4b5fc070ff2fa2eea209451abbeb" ]'
+  - '[ "$(sha256sum get_repo_fingerprint.sh | cut -d " " -f 1)" = "e916de2887dd22795c24cbb259d5ce3c80af94fd852e88b6bd1cce51f7863bf5" ]'
   - '[ "$(./get_repo_fingerprint.sh | sha256sum | cut -d " " -f 1)" = "b1dd9319343a8c5f50f9e06c389698dd91e2ca4af91479222642150d70ab60bf" ]'
 
 - name: test
