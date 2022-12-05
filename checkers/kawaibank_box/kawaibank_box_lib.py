@@ -16,12 +16,23 @@ class CheckMachine:
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Box.json'), 'r') as f:
             self.boxAbi = f.read()
 
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Exploit.json'), 'r') as f:
+            self.exploitAbi = f.read()
+
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json'), 'r') as f:
             self.config = json.load(f)
 
         cc = randint(0, len(self.config['CHECK_ACCOUNTS']) - 1)
         self.check_account = self.config['CHECK_ACCOUNTS'][cc]
         self.check_key = self.config['CHECK_KEYS'][cc]
+
+        cc = randint(0, len(self.config['CHECK_ACCOUNTS']) - 1)
+        self.attack_data_account = self.config['CHECK_ACCOUNTS'][cc]
+        self.attack_data_key = self.config['CHECK_KEYS'][cc]
+
+        cc = randint(0, len(self.config['CHECK_ACCOUNTS']) - 1)
+        self.exploit_account = self.config['CHECK_ACCOUNTS'][cc]
+        self.exploit_key = self.config['CHECK_KEYS'][cc]
         
     def get_w3(self):
         session = get_initialized_session()
@@ -34,6 +45,11 @@ class CheckMachine:
         kawaiBank = w3.eth.contract(address=kawaibankAddr, abi=self.kawaiBankAbi)
         boxAddr = kawaiBank.functions.box().call()
         return w3.eth.contract(address=boxAddr, abi=self.boxAbi)
+
+    def get_exploit(self, w3, kawaibankAddr):
+        kawaiBank = w3.eth.contract(address=kawaibankAddr, abi=self.kawaiBankAbi)
+        exploitAddr = kawaiBank.functions.exploit().call()
+        return w3.eth.contract(address=exploitAddr, abi=self.exploitAbi)
 
     def get_blockchain_token(self):
         return self.config["BLOCKCHAIN_TOKEN"]
@@ -52,3 +68,18 @@ class CheckMachine:
 
     def get_check_key(self):
         return self.check_key
+
+    def get_attack_data_account(self):
+        return self.attack_data_account
+
+    def get_attack_data_key(self):
+        return self.attack_data_key
+
+    def get_exploit_account(self):
+        return self.exploit_account
+
+    def get_exploit_key(self):
+        return self.exploit_key
+
+    def get_kawai_banks(self):
+        return self.config['KAWAI_BANKS']

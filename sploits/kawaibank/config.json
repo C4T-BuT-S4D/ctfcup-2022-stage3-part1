@@ -1,0 +1,5 @@
+{
+  "BLOCKCHAIN_PROTOCOL": "https",
+  "BLOCKCHAIN_ADDRESS": "ctfpuc.cbsctf.live",
+  "BLOCKCHAIN_PORT": "443"
+}

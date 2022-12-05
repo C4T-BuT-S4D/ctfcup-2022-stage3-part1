@@ -35,11 +35,30 @@ class Checker(BaseChecker):
             self.cquit(status.Status.DOWN, 'Contract login error', 'Got web3.exceptions.ContractLogicError')
 
     def check(self):
+        w3 = self.mch.get_w3()
+        kawaiBanks = self.mch.get_kawai_banks()
+        for kawaiBank in kawaiBanks:
+            exploit = self.mch.get_exploit(w3, kawaiBank)
+            nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
+
+            tx = exploit.functions.exploit().buildTransaction({
+                'chainId': self.mch.get_chain_id(),
+                'gas': 4000000,
+                'gasPrice': w3.toWei(10, 'gwei'),
+                'nonce': nonce
+            })
+            tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
+            tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+            r = w3.eth.wait_for_transaction_receipt(tx_hash)
+            print(r['status'])
+
+            self.assert_in('status', r, 'Status not available for transaction receipt')
         self.cquit(Status.OK)
 
     def put(self, flag_id: str, flag: str, vuln: str):
         w3 = self.mch.get_w3()
         box = self.mch.get_box(w3, self.host)
+        exploit = self.mch.get_exploit(w3, self.host)
         token_id = self.mch.get_token_id()
         key = self.mch.get_key()
         nonce = w3.eth.getTransactionCount(self.mch.get_check_account())
@@ -56,6 +75,24 @@ class Checker(BaseChecker):
 
         self.assert_in('status', r, 'Status not available for transaction receipt')
         self.assert_eq(r['status'], 1, "Can't mint token")
+
+        nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
+
+        tx = exploit.functions.addBoxAttackData({
+            'kawaiBank': self.host,
+            'tokenId': token_id
+        }).buildTransaction({
+            'chainId': self.mch.get_chain_id(),
+            'gas': 400000,
+            'gasPrice': w3.toWei(10, 'gwei'),
+            'nonce': nonce
+        })
+        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_attack_data_key())
+        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+        r = w3.eth.wait_for_transaction_receipt(tx_hash)
+
+        self.assert_in('status', r, 'Status not available for transaction receipt')
+        self.assert_eq(r['status'], 1, "Can't add attack data")
 
         self.cquit(Status.OK, f'{self.host}:{token_id}', f'{key}:{token_id}')
 

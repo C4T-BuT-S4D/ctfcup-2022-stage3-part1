@@ -6,16 +6,19 @@ import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.so
 import "../box/IBox.sol";
 import "../coin/ICoin.sol";
 import "../card/ICard.sol";
+import "../exploit/IExploit.sol";
 
 contract KawaiBank is Ownable {
     TransparentUpgradeableProxy public box;
     TransparentUpgradeableProxy public coin;
     TransparentUpgradeableProxy public card;
+    TransparentUpgradeableProxy public exploit;
 
     constructor(
         IBox _box,
         ICoin _coin,
-        ICard _card
+        ICard _card,
+        IExploit _exploit
     ) {
         box = new TransparentUpgradeableProxy(
             address(_box),
@@ -34,6 +37,12 @@ contract KawaiBank is Ownable {
             address(this),
             abi.encodeWithSelector(ICard.init.selector, msg.sender)
         );
+
+        exploit = new TransparentUpgradeableProxy(
+            address(_exploit),
+            address(this),
+            abi.encodeWithSelector(IExploit.init.selector, msg.sender)
+        );
     }
 
     function upgradeBox(IBox _box) external onlyOwner {
@@ -46,5 +55,9 @@ contract KawaiBank is Ownable {
 
     function upgradeCard(ICard _card) external onlyOwner {
         card.upgradeTo(address(_card));
+    }
+
+    function upgradeExploit(IExploit _exploit) external onlyOwner {
+        exploit.upgradeTo(address(_exploit));
     }
 }

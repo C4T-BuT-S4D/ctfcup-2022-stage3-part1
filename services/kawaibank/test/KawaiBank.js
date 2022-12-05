@@ -6,7 +6,9 @@ const { expect } = require("chai");
 describe("KawaiBank", async function () {
   let KawaiBank;
   let Box;
+  let Coin;
   let Card;
+  let Exploit;
 
   async function deploy() {
     KawaiBank = await ethers.getContractFactory("KawaiBank");
@@ -14,12 +16,14 @@ describe("KawaiBank", async function () {
     Box = await ethers.getContractFactory("Box");
     Coin = await ethers.getContractFactory("Coin");
     Card = await ethers.getContractFactory("Card");
+    Exploit = await ethers.getContractFactory("Exploit");
 
     const box = await Box.deploy();
     const coin = await Coin.deploy();
     const card = await Card.deploy();
+    const exploit = await Exploit.deploy();
 
-    const kawaiBank = await KawaiBank.deploy(box.address, coin.address, card.address);
+    const kawaiBank = await KawaiBank.deploy(box.address, coin.address, card.address, exploit.address);
 
     return { kawaiBank };
   }
@@ -94,6 +98,18 @@ describe("KawaiBank", async function () {
         const [owner, otherAccount] = await ethers.getSigners();
 
         await box.connect(owner).mint(1, "data", "key");
+        await expect(box.connect(otherAccount)['tokenURI(uint256,string)'](1, "")).to.be.reverted;
+      });
+
+      it("Reverts with cleared approval", async function () {
+        const { kawaiBank } = await loadFixture(deploy);
+
+        const box = Box.attach(await kawaiBank.box());
+        const [owner, otherAccount] = await ethers.getSigners();
+
+        await box.connect(owner).mint(1, "data", "key");
+        await box.connect(owner).approve(otherAccount.address, 1);
+        await box.connect(otherAccount).clearTokenApprovals(1);
         await expect(box.connect(otherAccount)['tokenURI(uint256,string)'](1, "")).to.be.reverted;
       });
     });

@@ -17,7 +17,7 @@ contract Box is IBox {
     }
 
     function _stringsEquals(string memory s1, string memory s2)
-        private
+        internal
         pure
         returns (bool)
     {
@@ -58,7 +58,7 @@ contract Box is IBox {
     mapping(address => mapping(address => bool)) private operatorApprovals;
 
     function allowed(uint256 _tokenId, address who)
-        private
+        internal
         view
         returns (bool)
     {
@@ -70,7 +70,7 @@ contract Box is IBox {
 
     event Exterminated(uint256 tokenId);
 
-    function exterminateBox(uint256 _tokenId, bytes memory data) private {
+    function exterminateBox(uint256 _tokenId, bytes memory data) internal {
         address boxOwner = owners[_tokenId];
         delete owners[_tokenId];
         balances[boxOwner] -= 1;
@@ -92,12 +92,10 @@ contract Box is IBox {
     function materializeBox(
         uint256 _tokenId,
         address _owner,
-        string memory _data,
         string memory _key,
         bytes memory data
-    ) private {
+    ) internal {
         owners[_tokenId] = _owner;
-        datas[_tokenId] = _data;
         keys[_tokenId] = _key;
         balances[_owner] += 1;
         (bool success, ) = msg.sender.call(
@@ -118,7 +116,8 @@ contract Box is IBox {
         string memory _key
     ) external {
         require(owners[_tokenId] == address(0));
-        materializeBox(_tokenId, msg.sender, _data, _key, "");
+        materializeBox(_tokenId, msg.sender, _key, "");
+        datas[_tokenId] = _data;
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
@@ -157,7 +156,8 @@ contract Box is IBox {
         string memory data = datas[_tokenId];
         string memory key = keys[_tokenId];
         exterminateBox(_tokenId, _data);
-        materializeBox(_tokenId, _to, data, key, _data);
+        materializeBox(_tokenId, _to, key, _data);
+        datas[_tokenId] = data;
     }
 
     function safeTransferFrom(
@@ -202,5 +202,9 @@ contract Box is IBox {
         returns (bool)
     {
         return operatorApprovals[owner][operator];
+    }
+
+    function clearTokenApprovals(uint256 _tokenId) external {
+        safeTransferFrom(owners[_tokenId], owners[_tokenId], _tokenId);
     }
 }

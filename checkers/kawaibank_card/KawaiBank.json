@@ -15,6 +15,11 @@
         "internalType": "contract ICard",
         "name": "_card",
         "type": "address"
+      },
+      {
+        "internalType": "contract IExploit",
+        "name": "_exploit",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -68,6 +73,19 @@
   {
     "inputs": [],
     "name": "coin",
+    "outputs": [
+      {
+        "internalType": "contract TransparentUpgradeableProxy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "exploit",
     "outputs": [
       {
         "internalType": "contract TransparentUpgradeableProxy",
@@ -146,6 +164,19 @@
       }
     ],
     "name": "upgradeCoin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IExploit",
+        "name": "_exploit",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeExploit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

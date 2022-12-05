@@ -20,8 +20,12 @@ class CheckMachine:
             self.config = json.load(f)
 
         cc = randint(0, len(self.config['CHECK_ACCOUNTS']) - 1)
-        self.check_account = self.config['CHECK_ACCOUNTS'][cc]
-        self.check_key = self.config['CHECK_KEYS'][cc]
+        self.check_account1 = self.config['CHECK_ACCOUNTS'][cc]
+        self.check_key1 = self.config['CHECK_KEYS'][cc]
+
+        cc = randint(0, len(self.config['CHECK_ACCOUNTS']) - 1)
+        self.check_account2 = self.config['CHECK_ACCOUNTS'][cc]
+        self.check_key2 = self.config['CHECK_KEYS'][cc]
         
     def get_w3(self):
         session = get_initialized_session()
@@ -41,8 +45,26 @@ class CheckMachine:
     def get_chain_id(self):
         return 1337
 
-    def get_check_account(self):
-        return self.check_account
+    def get_check_account1(self):
+        return self.check_account1
 
-    def get_check_key(self):
-        return self.check_key
+    def get_check_key1(self):
+        return self.check_key1
+
+    def get_check_account2(self):
+        return self.check_account2
+
+    def get_check_key2(self):
+        return self.check_key2
+
+    def get_key(self):
+        return rnd_string(32)
+
+    def get_card_id(self):
+        return randint(0, (2**256)-1)
+
+    def get_gift_id(self):
+        return randint(0, (2**256)-1)
+
+    def get_sign_id(self):
+        return randint(0, (2**256)-1)
