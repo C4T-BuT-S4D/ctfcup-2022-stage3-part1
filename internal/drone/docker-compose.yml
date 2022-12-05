@@ -29,8 +29,8 @@ services:
   validator:
     build: validator
     environment:
-      CORRECT_HASH: '7d006b59d3099e1916ee67d3efc1b0a1'
-      ALLOWED_REPOS: 'ctfcup-2022-final/team0'
+      CORRECT_HASHES: 'ctfcup-2022-final/team0:bec17ed7fe16d63dc3766f900bdc887e;ctfcup-2022-final/team1:4d88da60da24db1e8d17726569fb92fe'
+      ALLOWED_REPOS: 'ctfcup-2022-final/team0,ctfcup-2022-final/team1'
     restart: unless-stopped
     pids_limit: 128
     mem_limit: 2G
