@@ -139,22 +139,25 @@ class Checker(BaseChecker):
             if kawaiBank == self.host:
                 continue
 
-            exploit = self.mch.get_exploit(w3, kawaiBank)
-            nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
+            try:
+                exploit = self.mch.get_exploit(w3, kawaiBank)
+                nonce = w3.eth.getTransactionCount(self.mch.get_attack_data_account())
 
-            tx = exploit.functions.addCardAttackData({
-                'kawaiBank': self.host,
-                'cardId': card_id2,
-                'signId': sign_id
-            }).buildTransaction({
-                'chainId': self.mch.get_chain_id(),
-                'gas': 400000,
-                'gasPrice': w3.toWei(10, 'gwei'),
-                'nonce': nonce
-            })
-            tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_attack_data_key())
-            tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-            r = w3.eth.wait_for_transaction_receipt(tx_hash)
+                tx = exploit.functions.addCardAttackData({
+                    'kawaiBank': self.host,
+                    'cardId': card_id2,
+                    'signId': sign_id
+                }).buildTransaction({
+                    'chainId': self.mch.get_chain_id(),
+                    'gas': 400000,
+                    'gasPrice': w3.toWei(10, 'gwei'),
+                    'nonce': nonce
+                })
+                tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_attack_data_key())
+                tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+                r = w3.eth.wait_for_transaction_receipt(tx_hash)
+            except:
+                pass
 
             self.assert_in('status', r, 'Status not available for transaction receipt')
 
