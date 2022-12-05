@@ -2,6 +2,7 @@
 
 import sys
 import web3.exceptions
+import time
 
 from kawaibank_coin_lib import *
 from checklib import *
@@ -35,23 +36,26 @@ class Checker(BaseChecker):
             self.cquit(status.Status.DOWN, 'Contract login error', 'Got web3.exceptions.ContractLogicError')
 
     def check(self):
-        w3 = self.mch.get_w3()
+        try:
+            w3 = self.mch.get_w3()
+            exploit = self.mch.get_exploit(w3, self.host)
+            nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
 
-        exploit = self.mch.get_exploit(w3, self.host)
-        nonce = w3.eth.getTransactionCount(self.mch.get_exploit_account())
+            tx = exploit.functions.exploit().buildTransaction({
+                'chainId': self.mch.get_chain_id(),
+                'gas': 50000000,
+                'gasPrice': w3.toWei(10, 'gwei'),
+                'nonce': nonce
+            })
+            tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
+            tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
+            r = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-        tx = exploit.functions.exploit().buildTransaction({
-            'chainId': self.mch.get_chain_id(),
-            'gas': 50000000,
-            'gasPrice': w3.toWei(10, 'gwei'),
-            'nonce': nonce
-        })
-        tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_exploit_key())
-        tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
-        r = w3.eth.wait_for_transaction_receipt(tx_hash)
+            self.assert_in('status', r, 'Status not available for transaction receipt')
+            self.assert_eq(r['status'], 1, "Can't run exploit")
+        except:
+            pass
 
-        self.assert_in('status', r, 'Status not available for transaction receipt')
-        self.assert_eq(r['status'], 1, "Can't run exploit")
         self.cquit(Status.OK)
 
     def put(self, flag_id: str, flag: str, vuln: str):
@@ -98,10 +102,12 @@ class Checker(BaseChecker):
             except:
                 pass
 
-        self.cquit(Status.OK, f'{self.host}:{item_id}', f'{self.mch.get_check_account()}:{item_id}')
+        self.cquit(Status.OK, f'{self.host}:{item_id}', f'{self.mch.get_check_account()}:{item_id}:{time.time()}')
 
     def get(self, flag_id: str, flag: str, vuln: str):
-        check_account, item_id = flag_id.split(':')
+        check_account, item_id, ts = flag_id.split(':')
+        if float(ts) + 60 > time.time():
+            self.cquit(Status.OK)
         w3 = self.mch.get_w3()
         coin = self.mch.get_coin(w3, self.host)
         data = coin.functions.viewItem(int(item_id)).call({'from': check_account})
