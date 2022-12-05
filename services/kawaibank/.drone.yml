@@ -7,7 +7,7 @@ steps:
   image: node:16.18.1
   commands:
   - '[ "$(sha256sum get_repo_fingerprint.sh | cut -d " " -f 1)" = "64bb841c427967e702e0bf6060244e5f306d4b5fc070ff2fa2eea209451abbeb" ]'
-  - '[ "$(./get_repo_fingerprint.sh | sha256sum | cut -d " " -f 1)" = "82a030bce5ba1e9068e345afd677bc1bcd9aad8ea9fd8474f708d0853efc4204" ]'
+  - '[ "$(./get_repo_fingerprint.sh | sha256sum | cut -d " " -f 1)" = "b1dd9319343a8c5f50f9e06c389698dd91e2ca4af91479222642150d70ab60bf" ]'
 
 - name: test
   image: node:16.18.1
