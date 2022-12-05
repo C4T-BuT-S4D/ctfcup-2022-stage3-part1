@@ -93,6 +93,8 @@ class Checker(BaseChecker):
         self.assert_in('status', r, 'Status not available for transaction receipt')
         self.assert_eq(r['status'], 1, "Can't create card")
 
+        nonce1 = w3.eth.getTransactionCount(self.mch.get_check_account1())
+
         tx = card.functions.createGift(
             gift_id,
             card_id1,
@@ -103,7 +105,7 @@ class Checker(BaseChecker):
             'chainId': self.mch.get_chain_id(),
             'gas': 400000,
             'gasPrice': w3.toWei(10, 'gwei'),
-            'nonce': nonce1 + 1
+            'nonce': nonce1
         })
         tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key1())
         tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
@@ -111,6 +113,8 @@ class Checker(BaseChecker):
 
         self.assert_in('status', r, 'Status not available for transaction receipt')
         self.assert_eq(r['status'], 1, "Can't create gift")
+
+        nonce2 = w3.eth.getTransactionCount(self.mch.get_check_account2())
 
         tx = card.functions.spendGift(
             card_id1,
@@ -122,7 +126,7 @@ class Checker(BaseChecker):
             'chainId': self.mch.get_chain_id(),
             'gas': 400000,
             'gasPrice': w3.toWei(10, 'gwei'),
-            'nonce': nonce2 + 1
+            'nonce': nonce2
         })
         tx_signed = w3.eth.account.signTransaction(tx, private_key=self.mch.get_check_key2())
         tx_hash = w3.eth.send_raw_transaction(tx_signed.rawTransaction)
