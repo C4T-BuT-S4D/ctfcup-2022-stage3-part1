@@ -15,11 +15,11 @@ Repository contains source code of services, checkers and sploits.
 
 ## Services
 
-Services were sponsored by GazPromBank.
+Services were sponsored by GazpromBank.
 
 | Service | Language | Checker | Sploits | Authors |
 |---------|----------|---------|---------|---------|
-| **[KawaiGazPromBank](services/kawaigazprombank/)** | Solidity | [Checker](checkers/) | [Sploits](sploits/kawaigazprombank/) | [@b1r1b1r1](https://github.com/b1r1b1r1) |
+| **[KawaiGazpromBank](services/kawaigazprombank/)** | Solidity | [Checker](checkers/) | [Sploits](sploits/kawaigazprombank/) | [@b1r1b1r1](https://github.com/b1r1b1r1) |
 
 
 ## Infrastructure
