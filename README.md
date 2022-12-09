@@ -1,4 +1,4 @@
-[![check-services](https://github.com/C4T-BuT-S4D/ctfcup-2022-stage3-part1/actions/workflows/check-services.yml/badge.svg)](https://github.com/C4T-BuT-S4D/ctfcup-2022-stage3-part1/actions/workflows/check-services.yml)
+[![check-services](https://github.com/C4T-BuT-S4D/ctfcup-2022-stage3-part1/actions/workflows/check-services.yml/badge.svg?branch=master)](https://github.com/C4T-BuT-S4D/ctfcup-2022-stage3-part1/actions/workflows/check-services.yml)
 
 # ctfcup-2022 | Stage3 Part1
 
