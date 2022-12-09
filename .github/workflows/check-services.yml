@@ -35,9 +35,9 @@ jobs:
     strategy:
       matrix:
         service:
-        - kawaibank_box
-        - kawaibank_coin
-        - kawaibank_card
+        - kawaigazprombank_box
+        - kawaigazprombank_coin
+        - kawaigazprombank_card
 
     steps:
     - uses: actions/checkout@v2
