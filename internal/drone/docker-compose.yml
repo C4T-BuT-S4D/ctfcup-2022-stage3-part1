@@ -29,7 +29,7 @@ services:
   validator:
     build: validator
     environment:
-      CORRECT_HASHES: 'ctfcup-2022-final/team0:363a3f4cb16bf2706afcbfc9936d504b;ctfcup-2022-final/team1:a66e298e0d776557a83cbb42758e4cec;ctfcup-2022-final/team2:7a84be92354c44207e956d3f82368e75;ctfcup-2022-final/team3:b4350518c1e54b250c6706e6a14f756f;ctfcup-2022-final/team4:02733f7ce3de7fb8e7c899631275df9b'
+      CORRECT_HASHES: 'ctfcup-2022-final/team0:c4fe855a8114b440b74253ae65eb1708;ctfcup-2022-final/team1:7da0e9485616af189ba8e29dad669e9b;ctfcup-2022-final/team2:c7fa08b08b04e0d161dcff8d97ad2473;ctfcup-2022-final/team3:6c997e783f0cf7c5a8e7b0d7b094e53e;ctfcup-2022-final/team4:8b04ab0ea5f3b41099b75b337664d5ad'
     restart: unless-stopped
     pids_limit: 128
     mem_limit: 2G
