@@ -32,25 +32,25 @@ storages:
     password: secret
     port: 6379
 tasks:
-- checker: kawaibank_coin/checker.py
+- checker: kawaigazprombank_coin/checker.py
   checker_timeout: 40
   checker_type: pfr
   gets: 1
-  name: kawaibank_coin
+  name: kawaigazprombank_coin
   places: 1
   puts: 1
-- checker: kawaibank_box/checker.py
+- checker: kawaigazprombank_box/checker.py
   checker_timeout: 40
   checker_type: pfr
   gets: 1
-  name: kawaibank_box
+  name: kawaigazprombank_box
   places: 1
   puts: 1
-- checker: kawaibank_card/checker.py
+- checker: kawaigazprombank_card/checker.py
   checker_timeout: 40
   checker_type: pfr
   gets: 1
-  name: kawaibank_card
+  name: kawaigazprombank_card
   places: 1
   puts: 1
 teams:

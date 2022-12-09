@@ -1,0 +1,34 @@
+diff --git a/services/kawaigazprombank/contracts/box/Box.sol b/services/kawaigazprombank/contracts/box/Box.sol
+index c2a074f..9f6aa22 100644
+--- a/services/kawaigazprombank/contracts/box/Box.sol
++++ b/services/kawaigazprombank/contracts/box/Box.sol
+@@ -70,7 +70,19 @@ contract Box is IBox {
+ 
+     event Exterminated(uint256 tokenId);
+ 
+-    function exterminateBox(uint256 _tokenId, bytes memory data) internal {
++    bool private once;
++
++    modifier nonReentrant() {
++        require(!once);
++        once = true;
++        _;
++        once = false;
++    }
++
++    function exterminateBox(uint256 _tokenId, bytes memory data)
++        internal
++        nonReentrant
++    {
+         address boxOwner = owners[_tokenId];
+         delete owners[_tokenId];
+         balances[boxOwner] -= 1;
+@@ -94,7 +106,7 @@ contract Box is IBox {
+         address _owner,
+         string memory _key,
+         bytes memory data
+-    ) internal {
++    ) internal nonReentrant {
+         owners[_tokenId] = _owner;
+         keys[_tokenId] = _key;
+         balances[_owner] += 1;
