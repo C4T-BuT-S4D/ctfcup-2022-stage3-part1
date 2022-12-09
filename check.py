@@ -450,13 +450,13 @@ def logs_services(_args):
 
 def validate_checkers(_args):
     global HOST
-    with open(BASE_DIR / 'services/kawaibank/config.json') as f:
+    with open(BASE_DIR / 'services/kawaigazprombank/config.json') as f:
         service_config_old = json.load(f)
-    with open(BASE_DIR / 'checkers/kawaibank_box/config.json') as f:
+    with open(BASE_DIR / 'checkers/kawaigazprombank_box/config.json') as f:
         checker_box_config_old = json.load(f)
-    with open(BASE_DIR / 'checkers/kawaibank_coin/config.json') as f:
+    with open(BASE_DIR / 'checkers/kawaigazprombank_coin/config.json') as f:
         checker_coin_config_old = json.load(f)
-    with open(BASE_DIR / 'checkers/kawaibank_card/config.json') as f:
+    with open(BASE_DIR / 'checkers/kawaigazprombank_card/config.json') as f:
         checker_card_config_old = json.load(f)
     try:
         service_config = copy.deepcopy(service_config_old)
@@ -481,47 +481,47 @@ def validate_checkers(_args):
         checker_card_config['BLOCKCHAIN_ADDRESS'] = '127.0.0.1'
         checker_card_config['BLOCKCHAIN_PORT'] = '80'
 
-        with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
+        with open(BASE_DIR / 'services/kawaigazprombank/config.json', 'w') as f:
             json.dump(service_config, f, indent=2)
 
-        with open(BASE_DIR / 'checkers/kawaibank_box/config.json', 'w') as f:
+        with open(BASE_DIR / 'checkers/kawaigazprombank_box/config.json', 'w') as f:
             json.dump(checker_box_config, f, indent=2)
 
-        with open(BASE_DIR / 'checkers/kawaibank_coin/config.json', 'w') as f:
+        with open(BASE_DIR / 'checkers/kawaigazprombank_coin/config.json', 'w') as f:
             json.dump(checker_coin_config, f, indent=2)
 
-        with open(BASE_DIR / 'checkers/kawaibank_card/config.json', 'w') as f:
+        with open(BASE_DIR / 'checkers/kawaigazprombank_card/config.json', 'w') as f:
             json.dump(checker_card_config, f, indent=2)
 
         my_env = os.environ.copy()
         my_env['BLOCKCHAIN_TOKEN'] = '0388f4afe88c5d7e564a7e62276e8031'
-        subprocess.run('npm i', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True)
-        subprocess.run('npx hardhat compile', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True, stdout=subprocess.PIPE)
-        result = subprocess.run('npx hardhat run ./scripts/service_deploy_init.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True, stdout=subprocess.PIPE)
+        subprocess.run('npm i', env=my_env, cwd=BASE_DIR / 'services' / 'kawaigazprombank', check=True, shell=True)
+        subprocess.run('npx hardhat compile', env=my_env, cwd=BASE_DIR / 'services' / 'kawaigazprombank', check=True, shell=True, stdout=subprocess.PIPE)
+        result = subprocess.run('npx hardhat run ./scripts/service_deploy_init.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaigazprombank', check=True, shell=True, stdout=subprocess.PIPE)
         out = json.loads(result.stdout.decode())
-        service_config['KAWAIBANK_ADDRESS'] = out['kawaiBank']
-        HOST = out['kawaiBank']
-        with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
+        service_config['KAWAIGAZPROMBANK_ADDRESS'] = out['kawaiGazPromBank']
+        HOST = out['kawaiGazPromBank']
+        with open(BASE_DIR / 'services/kawaigazprombank/config.json', 'w') as f:
             json.dump(service_config, f, indent=2)
 
         for service in get_services():
             service.validate_checker()
 
-        subprocess.run('npx hardhat run ./scripts/service_deploy.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaibank', check=True, shell=True)
+        subprocess.run('npx hardhat run ./scripts/service_deploy.js --network ctfpuc_private', env=my_env, cwd=BASE_DIR / 'services' / 'kawaigazprombank', check=True, shell=True)
 
         for service in get_services():
             service.validate_checker()
     finally:
-        with open(BASE_DIR / 'services/kawaibank/config.json', 'w') as f:
+        with open(BASE_DIR / 'services/kawaigazprombank/config.json', 'w') as f:
             json.dump(service_config_old, f, indent=2)
             f.write('\n')
-        with open(BASE_DIR / 'checkers/kawaibank_box/config.json', 'w') as f:
+        with open(BASE_DIR / 'checkers/kawaigazprombank_box/config.json', 'w') as f:
             json.dump(checker_box_config_old, f, indent=2)
             f.write('\n')
-        with open(BASE_DIR / 'checkers/kawaibank_coin/config.json', 'w') as f:
+        with open(BASE_DIR / 'checkers/kawaigazprombank_coin/config.json', 'w') as f:
             json.dump(checker_coin_config_old, f, indent=2)
             f.write('\n')
-        with open(BASE_DIR / 'checkers/kawaibank_card/config.json', 'w') as f:
+        with open(BASE_DIR / 'checkers/kawaigazprombank_card/config.json', 'w') as f:
             json.dump(checker_card_config_old, f, indent=2)
             f.write('\n')
 
@@ -529,7 +529,7 @@ def validate_checkers(_args):
 def validate_structure(_args):
     was_error = False
     
-    if not StructureValidator(BASE_DIR / 'services' / 'kawaibank').validate():
+    if not StructureValidator(BASE_DIR / 'services' / 'kawaigazprombank').validate():
         was_error = True
     if not StructureValidator(BASE_DIR / 'internal' / 'network').validate():
         was_error = True
@@ -538,11 +538,11 @@ def validate_structure(_args):
     if not StructureValidator(BASE_DIR / 'internal' / 'drone').validate():
         was_error = True
 
-    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_box').validate():
+    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaigazprombank_box').validate():
         was_error = True
-    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_coin').validate():
+    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaigazprombank_coin').validate():
         was_error = True
-    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaibank_card').validate():
+    if not StructureValidator(BASE_DIR / 'checkers' / 'kawaigazprombank_card').validate():
         was_error = True
 
     if was_error:
