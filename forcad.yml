@@ -21,6 +21,8 @@ tasks:
   name: kawaigazprombank_coin
   places: 1
   puts: 1
+  default_score: 500
+
 - checker: kawaigazprombank_box/checker.py
   checker_timeout: 40
   checker_type: pfr
@@ -28,6 +30,8 @@ tasks:
   name: kawaigazprombank_box
   places: 1
   puts: 1
+  default_score: 1000
+
 - checker: kawaigazprombank_card/checker.py
   checker_timeout: 40
   checker_type: pfr
@@ -35,6 +39,7 @@ tasks:
   name: kawaigazprombank_card
   places: 1
   puts: 1
+  default_score: 1000
 
 teams:
   - ip: '0xbFD5EbB50e77B5d5cf43103Fd556811098155377'
