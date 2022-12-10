@@ -42,13 +42,15 @@ tasks:
   default_score: 1000
 
 teams:
-  - ip: '0xbFD5EbB50e77B5d5cf43103Fd556811098155377'
-    name: NPC
-  - ip: '0x3f853E2e04Ec0D6d982321c097EE16Cf97C7D880'
-    name: Seed_Im_Pierre_Dim
-  - ip: '0x849C18Ed5261C7e93Ae57bbd4EAD45D59B1dE5a6'
-    name: Mik
-  - ip: '0x88e8e3Fd5D57E580029863d7B97D3aa5D963B600'
-    name: SPRUSH
-  - ip: '0x83419087B4e393d8E744cB5171fF52941CA14f54'
-    name: UzUzuga
+- ip: '0xbFD5EbB50e77B5d5cf43103Fd556811098155377'
+  name: NPC
+- ip: '0x3f853E2e04Ec0D6d982321c097EE16Cf97C7D880'
+  name: 'FaKappa'
+- ip: '0x849C18Ed5261C7e93Ae57bbd4EAD45D59B1dE5a6'
+  name: 'SPRUSH'
+- ip: '0x88e8e3Fd5D57E580029863d7B97D3aa5D963B600'
+  name: 'Ar'
+- ip: '0x83419087B4e393d8E744cB5171fF52941CA14f54'
+  name: '.einabe'
+- ip: '0xd12630c0B75594fA32D497546248f3363A4C7e63'
+  name: 'smiley-from-telega'
