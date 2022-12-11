@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  runner:
+    image: 'drone/drone-runner-docker:1'
+    environment:
+      DRONE_RPC_HOST: 'ci.cbsctf.live'
+      DRONE_RPC_PROTO: 'https'
+      DRONE_RPC_SECRET: '4c681ed141dc5f8a65b9b2443d6fb8e6'
+      DRONE_RUNNER_CAPACITY: '8'
+      DRONE_RUNNER_NAME: 'default-docker'
+      DRONE_RUNNER_SECRETS: 'BLOCKCHAIN_TOKEN:0388f4afe88c5d7e564a7e62276e8031'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    ports:
+      - "3000:3000"
+    
