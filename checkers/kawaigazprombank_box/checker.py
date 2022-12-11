@@ -34,6 +34,11 @@ class Checker(BaseChecker):
             self.cquit(status.Status.DOWN, 'Validation error', 'Got web3.exceptions.ValidationError')
         except web3.exceptions.ContractLogicError:
             self.cquit(status.Status.DOWN, 'Contract login error', 'Got web3.exceptions.ContractLogicError')
+        except ValueError as e:
+            if action == 'put':
+                self.cquit(Status.OK, 'checker flapped :(', 'kek')
+            else:
+                self.cquit(Status.OK)
 
     def check(self):
         try:
@@ -106,6 +111,9 @@ class Checker(BaseChecker):
         self.cquit(Status.OK, f'{self.host}:{token_id}', f'{key}:{token_id}:{time.time()}')
 
     def get(self, flag_id: str, flag: str, vuln: str):
+        if flag_id == 'kek':
+            self.cquit(Status.OK, 'OK')
+
         key, token_id, ts = flag_id.split(':')
         if float(ts) + 60 > time.time():
             self.cquit(Status.OK)
